@@ -75,7 +75,7 @@ static void maybe_colorize_sideband(struct strbuf *dest, const char *src, int n)
 		return;
 	}
 
-	while (isspace(*src)) {
+	while (0 < n && isspace(*src)) {
 		strbuf_addch(dest, *src);
 		src++;
 		n--;
@@ -84,6 +84,9 @@ static void maybe_colorize_sideband(struct strbuf *dest, const char *src, int n)
 	for (i = 0; i < ARRAY_SIZE(keywords); i++) {
 		struct keyword_entry *p = keywords + i;
 		int len = strlen(p->keyword);
+
+		if (n <= len)
+			continue;
 		/*
 		 * Match case insensitively, so we colorize output from existing
 		 * servers regardless of the case that they use for their
@@ -100,8 +103,8 @@ static void maybe_colorize_sideband(struct strbuf *dest, const char *src, int n)
 		}
 	}
 
-	strbuf_add(dest, src, n);
-
+	if (0 < n)
+		strbuf_add(dest, src, n);
 }
 
 
